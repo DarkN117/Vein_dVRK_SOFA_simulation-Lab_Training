@@ -1,0 +1,140 @@
+<Node name="root" gravity="0 -9.81 0" dt="0.1" >
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Algorithm"/> <!-- Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,BruteForceDetection,CollisionPipeline] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Intersection"/> <!-- Needed to use components [MinProximityIntersection] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Geometry"/> <!-- Needed to use components [LineCollisionModel,PointCollisionModel,TriangleCollisionModel] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Response.Contact"/> <!-- Needed to use components [DefaultContactManager] -->  
+    <RequiredPlugin name="Sofa.Component.Constraint.Projective"/> <!-- Needed to use components [LinearMovementConstraint] -->  
+    <RequiredPlugin name="Sofa.Component.IO.Mesh"/> <!-- Needed to use components [MeshOBJLoader] -->  
+    <RequiredPlugin name="Sofa.Component.LinearSolver.Iterative"/> <!-- Needed to use components [CGLinearSolver] -->  
+    <RequiredPlugin name="Sofa.Component.Mapping.NonLinear"/> <!-- Needed to use components [RigidMapping] -->  
+    <RequiredPlugin name="Sofa.Component.Mass"/> <!-- Needed to use components [UniformMass] -->  
+    <RequiredPlugin name="Sofa.Component.MechanicalLoad"/> <!-- Needed to use components [ConstantForceField] -->  
+    <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/> <!-- Needed to use components [EulerImplicitSolver] -->  
+    <RequiredPlugin name="Sofa.Component.StateContainer"/> <!-- Needed to use components [MechanicalObject] -->  
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Constant"/> <!-- Needed to use components [MeshTopology] -->  
+    <RequiredPlugin name="Sofa.Component.Visual"/> <!-- Needed to use components [VisualStyle] -->
+    <RequiredPlugin name="ArticulatedSystemPlugin"/> <!-- Needed to use components [ArticulatedHierarchyContainer,ArticulatedSystemMapping,Articulation,ArticulationCenter] -->  
+    <RequiredPlugin name="Sofa.GL.Component.Rendering3D"/> <!-- Needed to use components [OglModel] -->
+    <RequiredPlugin name="Sofa.Component.SolidMechanics.FEM.Elastic"/> <!-- Needed to use components [BeamFEMForceField] -->   
+    <RequiredPlugin name="Sofa.Component.SolidMechanics.Spring"/> <!-- Needed to use components [RestShapeSpringsForceField] -->  
+     
+     
+    <DefaultAnimationLoop/>
+    <CollisionPipeline verbose="0" draw="0" />
+    <BruteForceBroadPhase />
+    <BVHNarrowPhase />
+    <MinProximityIntersection name="Proximity" alarmDistance="0.0001" contactDistance="0.00005" />
+    <CollisionResponse name="Response" response="PenalityContactForceField" />
+
+    <VisualStyle name="visualStyle1" displayFlags="hideBehaviorModels hideCollisionModels" />
+
+    <EulerImplicitSolver />
+    <CGLinearSolver iterations="100" name="linear solver" threshold="1e-20" tolerance="1e-20" />
+    
+    
+    <Node name="RestShape">
+	    <!-- Mechanical object containing the 2 articulations angles -->
+	    <MechanicalObject name="rest_shape" template="Vec1d" position="0 0.2 -0.2"/>
+    </Node>
+    
+    
+	<Node name="Gripper">
+	    <!-- Mechanical object containing the 2 articulations angles -->
+	    <MechanicalObject name="Articulations" template="Vec1d" position="0 0 0"/>
+
+		 <Node name="Jaws">
+
+			<!-- Mechanical object containing the 3 position/orientation of the base, left jaw and right jaw:praticamente lego la loro posa cioè la posizione e 			l'orientamento nello spazio unici per tutti e 3 i componenti -->
+			<EulerImplicitSolver />
+			<CGLinearSolver iterations="200" tolerance="1e-09" />
+			<MechanicalObject name="GripperDOFs" template="Rigid3d" position="0 0 0 -0.5652 -0.529 0.3821 -0.5049   0 0 0 -0.5652 -0.529 0.3821 -0.5049   0 0 0 -0.5652 -0.529 0.3821 -0.5049"/>
+			
+			<UniformMass template="Rigid3d" name="mass" totalMass="0.05" showAxisSizeFactor="0.005"/>
+			<!-- <ConstantForceField name="CFF" totalForce="0.001 0 0 0 0 0  0.001 0 0 0 0 0  0.001 0 0 0 0 0" /> -->
+
+			<Node name="ShaftVisual">
+			    <MeshObjLoader name="meshloader" filename="/home/darkn117/sofa/src/share/mesh/Simulation_meshes/Final_Centered_meshes/PSM_Base_High_Res.obj"/>
+			    <OglModel name="model" src="@meshloader"/>
+			    <RigidMapping input="@.." output="@model" index="0"/>
+
+			</Node>
+			
+			<Node name="LeftVisual">
+			    <MeshObjLoader name="meshloader" filename="/home/darkn117/sofa/src/share/mesh/Simulation_meshes/Final_Centered_meshes/PSM_L_Jaw_High_Res.obj"/>
+			    <OglModel name="model" src="@meshloader"/>
+			    <RigidMapping input="@.." output="@model" index="1"/>
+
+			</Node>
+
+			<Node name="RightVisual">
+			    <MeshObjLoader name="meshloader" filename="/home/darkn117/sofa/src/share/mesh/Simulation_meshes/Final_Centered_meshes/PSM_R_Jaw_High_Res.obj"/>
+			    <OglModel name="model" src="@meshloader"/>
+			    <RigidMapping input="@.." output="@model" index="2"/>
+
+			</Node>
+
+			<Node name="LeftCollision">
+			    <MeshObjLoader name="meshloader" filename="/home/darkn117/sofa/src/share/mesh/Simulation_meshes/Final_Centered_meshes/PSM_L_Jaw_Collision_Low_Res_Surface.obj"/>
+			    <MeshTopology src="@meshloader"/>
+			    <MechanicalObject name="model" src="@meshloader"/>
+			    <LineCollisionModel  moving="1" simulated="1" group="1"/>
+			    <PointCollisionModel moving="1" simulated="1" group="1"/>
+			    <RigidMapping input="@.." output="@model" index="1"/>
+
+			</Node>
+
+			<Node name="RightCollision">
+			    <MeshObjLoader name="meshloader" filename="/home/darkn117/sofa/src/share/mesh/Simulation_meshes/Final_Centered_meshes/PSM_R_Jaw_Collision_Low_Res_Surface.obj"/>
+			    <MeshTopology src="@meshloader"/>
+			    <MechanicalObject name="model" src="@meshloader"/>
+			    <LineCollisionModel  moving="1" simulated="1" group="1"/>
+			    <PointCollisionModel moving="1" simulated="1" group="1"/>
+			    <RigidMapping input="@.." output="@model" index="2"/>
+
+			</Node>
+
+		   <ArticulatedSystemMapping input1="@../Articulations" output="@GripperDOFs"/>
+
+        	</Node>
+        	   
+	   <RestShapeSpringsForceField name="RestShapeSFF" stiffness="10" angularStiffness="10" external_rest_shape="@../RestShape/rest_shape"/>
+		
+           <ArticulatedHierarchyContainer/>
+
+		    <!-- Articulations definitions -->
+		    <Node name="articulationCenters">
+			
+			<Node name="articulationCenter">
+			    <ArticulationCenter parentIndex="0" childIndex="0" posOnParent="0 0 0" posOnChild="0 0 0"/>
+
+			    <Node name="articulations">
+				<Articulation translation="0" rotation="1" rotationAxis="1 0 0" articulationIndex="0"/>
+			    </Node>
+
+			</Node>
+			
+			<Node name="articulationCenterLeft">
+			    <ArticulationCenter parentIndex="0" childIndex="1" posOnParent="0.001 0 0" posOnChild="0 0 0"/>
+
+			    <Node name="articulations">
+				<Articulation translation="0" rotation="1" rotationAxis="1 0 0" articulationIndex="1"/>
+			    </Node>
+
+			</Node>
+
+			<Node name="articulationCenterRight">
+			    <ArticulationCenter parentIndex="0" childIndex="2" posOnParent="-0.001 0 0" posOnChild="0 0 0"/>
+
+			    <Node name="articulations">
+				<Articulation translation="0" rotation="1" rotationAxis="1 0 0" articulationIndex="2"/>
+			    </Node>
+
+        </Node>
+
+		
+    </Node>
+
+</Node>
+	
+
+</Node>

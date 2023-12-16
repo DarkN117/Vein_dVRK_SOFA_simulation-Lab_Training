@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<Node name="root"  dt="0.005" showVisualModels="1" showBehaviorModels="0" showCollisionModels="0" showMappings="0" showForceFields="0" showWireFrame="1" gravity="0 0 -9810">
+    <RequiredPlugin name="SofaOpenglVisual"/>
+    <RequiredPlugin name="ArticulatedSystemPlugin"/> <!-- Needed to use components [ArticulatedHierarchyContainer,ArticulatedSystemMapping,Articulation,ArticulationCenter] -->  
+    <RequiredPlugin name="Sofa.Component.AnimationLoop"/> <!-- Needed to use components [ConstraintAnimationLoop] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Algorithm"/> <!-- Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,CollisionPipeline] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Intersection"/> <!-- Needed to use components [LocalMinDistance] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Geometry"/> <!-- Needed to use components [LineCollisionModel,PointCollisionModel,TriangleCollisionModel] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Response.Contact"/> <!-- Needed to use components [DefaultContactManager] -->  
+    <RequiredPlugin name="Sofa.Component.Constraint.Lagrangian.Correction"/> <!-- Needed to use components [PrecomputedConstraintCorrection,UncoupledConstraintCorrection] -->  
+    <RequiredPlugin name="Sofa.Component.Constraint.Lagrangian.Solver"/> <!-- Needed to use components [LCPConstraintSolver] -->  
+    <RequiredPlugin name="Sofa.Component.Haptics"/> <!-- Needed to use components [LCPForceFeedback] -->  
+    <RequiredPlugin name="Sofa.Component.IO.Mesh"/> <!-- Needed to use components [MeshGmshLoader,MeshOBJLoader] -->  
+    <RequiredPlugin name="Sofa.Component.LinearSolver.Iterative"/> <!-- Needed to use components [CGLinearSolver] -->  
+    <RequiredPlugin name="Sofa.Component.Mapping.Linear"/> <!-- Needed to use components [BarycentricMapping] -->  
+    <RequiredPlugin name="Sofa.Component.Mapping.NonLinear"/> <!-- Needed to use components [RigidMapping] -->  
+    <RequiredPlugin name="Sofa.Component.Mass"/> <!-- Needed to use components [UniformMass] -->  
+    <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/> <!-- Needed to use components [EulerImplicitSolver] -->  
+    <RequiredPlugin name="Sofa.Component.SolidMechanics.FEM.Elastic"/> <!-- Needed to use components [TetrahedronFEMForceField] -->  
+    <RequiredPlugin name="Sofa.Component.SolidMechanics.Spring"/> <!-- Needed to use components [RestShapeSpringsForceField] -->  
+    <RequiredPlugin name="Sofa.Component.StateContainer"/> <!-- Needed to use components [MechanicalObject] -->  
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Constant"/> <!-- Needed to use components [MeshTopology] -->  
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Dynamic"/> <!-- Needed to use components [TetrahedronSetGeometryAlgorithms] -->  
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Grid"/> <!-- Needed to use components [RegularGridTopology] -->  
+    <RequiredPlugin name="Sofa.Component.Visual"/> <!-- Needed to use components [VisualStyle] -->  
+    <RequiredPlugin name="Sofa.GL.Component.Rendering3D"/> <!-- Needed to use components [OglModel] -->
+        <FreeMotionAnimationLoop/>
+	<MasterConstraintSolver />
+	<LCPConstraintSolver initial_guess="true" displayTime="0" mu="0.7" tolerance="0.0000000001" printLog="0" maxIt="3000" build_lcp="true"/>
+	<CollisionPipeline depth="6" verbose="0" draw="0"/>
+	<BruteForceBroadPhase/>
+        <BVHNarrowPhase/>
+	<LocalMinDistance name="Proximity" alarmDistance="6.0" contactDistance="1.5" coneFactor="0.5" angleCone="-0.001"/>
+	<DefaultContactManager name="Response" response="FrictionContactConstraint" />
+	
+	<Node name="BOX">
+		<MeshOBJLoader name="meshLoader" filename="mesh/box_inside.obj" triangulate="true"/>
+		<Mesh/>
+		<MechanicalObject scale="50.0" dz="150"/>
+		<TriangleCollisionModel simulated="0" moving="0"/>	
+		<LineCollisionModel simulated="0" moving="0"/>
+		<PointCollisionModel simulated="0" moving="0"/>
+		<MeshOBJLoader name="meshLoader_0" filename="mesh/box_outside.obj" scale="50.0" handleSeams="1" />
+		<OglModel name="Visual" src="@meshLoader_0" color="0.0 0.4 0.6 0.2" dz="150"/>
+	</Node>
+	
+  
+	<Node name="TORUS">
+		<EulerImplicitSolver name="cg_odesolver" printLog="false"  rayleighMass="30"  rayleighStiffness="0.001"/>
+    <CGLinearSolver iterations="25" threshold="1.0e-15"  tolerance="1.0e-9" />
+    <MechanicalObject template="Rigid3d" scale="5.0"  dx="40.0" dy="0.0" dz="-70.0"/>
+		<UniformMass mass="0.01"/>
+    <!--<LinearSolverConstraintCorrection />-->
+    <UncoupledConstraintCorrection />
+		<Node name="Visu">
+			<MeshOBJLoader name="meshLoader_5" filename="mesh/torus.obj" scale="8.0" handleSeams="1" />
+			<OglModel name="Visual" src="@meshLoader_5" color="1.0 0.5 0.25 1.0" rx="90.0" invertPrimOrientation="1"/>
+			<RigidMapping input="@.." output="@Visual"/>
+		</Node>
+		
+		<Node name="Surf2">
+			<MeshOBJLoader name="meshLoader" filename="mesh/torus_for_collision.obj" triangulate="true"/>
+			<Mesh/>
+			<MechanicalObject scale="8.0" rx="90.0"/>
+			<TriangleCollisionModel/>
+			<LineCollisionModel/>
+			<PointCollisionModel/>
+			<RigidMapping/>
+		</Node>
+	</Node>
+
+
+  <Node name="TorusFEM">
+    <EulerImplicitSolver rayleighMass="0.01"  rayleighStiffness="0.001" />
+    <CGLinearSolver iterations="25" threshold="1.0e-15"  tolerance="1.0e-9" />
+    <!--<SparseLDLSolver /-->>
+    <MeshGmshLoader name="meshLoader" filename="mesh/torus_low_res.msh"/>
+    <Mesh/>
+    <TetrahedronSetTopologyContainer name="topo" src="@meshLoader" />
+    <MechanicalObject dx="-40" dy="0" dz="-70" rx="90" ry="0" rz="0" scale="8.0" />
+    <TetrahedronSetGeometryAlgorithms template="Vec3" name="GeomAlgo"/>
+    <UniformMass totalMass="0.01" />
+    <TetrahedronFEMForceField name="FEM" youngModulus="10000" poissonRatio="0.48" computeGlobalMatrix="false" method="polar"/>
+    <!--<LinearSolverConstraintCorrection />-->
+    <PrecomputedConstraintCorrection rotations="true" recompute="0"/>
+    <Node name="Visu">
+      <MeshOBJLoader name="meshLoader_1" filename="mesh/torus.obj" scale="8.0" handleSeams="1" />
+      <OglModel name="Visual" src="@meshLoader_1" color="red" dx="-40" dy="0" dz="-70" rx="90" ry="0" rz="0"/>
+      <BarycentricMapping input="@.." output="@Visual" />
+    </Node>
+    <Node name="Surf2">
+      <MeshObjLoader name="meshLoader" filename="mesh/torus_for_collision.obj"/>
+      <Mesh/>
+      <MechanicalObject dx="-40" dy="0" dz="-70" rx="90" ry="0" rz="0" scale="8.0"/>
+      <TriangleCollisionModel contactStiffness="0.1"/>
+      <LineCollisionModel />
+      <PointCollisionModel />
+      <BarycentricMapping />
+    </Node>
+  </Node>
+
+
+
+
+
+  <Node name="VirtualArticulatedXitact">
+    <EulerImplicitSolver rayleighMass="0.1" rayleighStiffness="0.01"/>
+    <CGLinearSolver iterations="40" name="linear solver" tolerance="1.0e-9" threshold="1.0e-15"/>
+    <!-- Modify this position in the scene -->
+    <MechanicalObject name="bati" template="Rigid3d" position="0 0 0 -0.7071068 0 0 0.7071068"/>
+    <UniformMass totalMass="0.01"/>
+
+
+    <RestShapeSpringsForceField points="0" stiffness="10000" angularStiffness="1000000000"/> <!--external_rest_shape="@toto"/>-->
+    <UncoupledConstraintCorrection compliance="0.0001  0.000000001 0 0 0.000000001 0 0.000000001"/>
+    
+
+    <Node name="VisuOfXitactBase">
+      <MeshObjLoader name="meshLoader_2" filename="mesh/cube.obj" scale="3" handleSeams="1" />
+      <OglModel name="VM1" src="@meshLoader_2"   dy="15.0" dz="30" />
+      <MeshObjLoader name="meshLoader_3" filename="mesh/cube.obj" scale="3" handleSeams="1" />
+      <OglModel name="VM2" src="@meshLoader_3"   dy="30.0" dz="30" />
+      <MeshObjLoader name="meshLoader_4" filename="mesh/cube.obj" scale="0.5" handleSeams="1" />
+      <OglModel name="VM3" src="@meshLoader_4" dy="38" />
+      <RigidMapping input="@.." output="@VM1" index="0"/>
+      <RigidMapping input="@.." output="@VM2" index="0"/>
+      <RigidMapping input="@.." output="@VM3" index="0"/>
+    </Node>
+
+    <Node name="Grasper">
+      <MechanicalObject name="Articulations" template="Vec1d" position="0 0 0 0 0 0" rest_position="0 0 0 0 0 0"/>
+      <!--	<UniformMass mass="10.0 1  2.0 0 0  0 10.0 0  0 0 10.0"/>	-->
+      <RestShapeSpringsForceField points="0 1 2 3 4 5" stiffness="1000000 1000000 1000000 1000 1000000 1000000 " printLog="true"/>
+      <UncoupledConstraintCorrection compliance="0.000001 0.000001 0.000001 0.001 0.000001 0.000001 " />
+
+      <LCPForceFeedback template="Vec1d" />
+      
+
+      <Node name="Jaws">
+        <MechanicalObject name="GrasperDOFs" template="Rigid3d" position="0 0 0 0 0 0 1  0 0 0 0 0 0 1  0 0 0 0 0 0 1  0 0 0 0 0 0 1  "/>
+        <!--	<UniformMass mass="0.1 1  2.0 0 0  0 10.0 0  0 0 10.0"/>	-->
+
+        <Node name="Tool1VM">
+          <OglModel name="VM" fileMesh="dt/aspi.trian" scale="1" rx="90.0" />
+          <RigidMapping input="@.." output="@VM" index="1"/>
+        </Node>
+
+        <Node name="Tool1CM">
+          <RegularGridTopology nx="1" ny="2" nz="1" min="0 -350 0" max="0 0 0" />
+          <MechanicalObject name="Endoscope Collision State"/>
+          <LineCollisionModel group="1"/>
+          <PointCollisionModel group="1"/>
+          <RigidMapping name="MM->CM mapping" input="@.." index="1"/>
+        </Node>
+
+
+        <Node name="Grasp1_1VM">
+          <OglModel name="VM" fileMesh="dt/mors1.trian" color="0.9 0.9 0.2 1.0" scale="1"  dy="25"/>
+          <RigidMapping input="@.." output="@VM" index="2"/>
+        </Node>
+
+        <Node name="Grasp1_1CM">
+          <MeshObjLoader filename="dt/mors1_extralight.obj" />
+          <Mesh/>
+          <MechanicalObject name="CM" scale="1"  dy="25"/>
+          <TriangleCollisionModel group="1"/>
+          <LineCollisionModel group="1"/>
+          <PointCollisionModel group="1"/>
+          <RigidMapping input="@.." output="@CM" index="2"/>
+        </Node>
+
+        <Node name="Grasp1_2VM">
+          <OglModel name="VM" fileMesh="dt/mors2.trian" color="0.9 0.9 0.2 1.0" scale="1"   dy="25"/>
+          <RigidMapping input="@.." output="@VM" index="3"/>
+        </Node>
+
+        <Node name="Grasp1_2CM">
+          <MeshObjLoader filename="dt/mors1_extralight.obj" />
+          <Mesh/>
+          <MechanicalObject name="CM" scale="1"  dy="25" />
+          <TriangleCollisionModel group="1"/>
+          <LineCollisionModel group="1"/>
+          <PointCollisionModel group="1"/>
+          <RigidMapping input="@.." output="@CM" index="3"/>
+        </Node>
+
+        <ArticulatedSystemMapping input1="@../Articulations" output="@GrasperDOFs" input2="@../../bati"/>
+      </Node>
+
+      <ArticulatedHierarchyContainer/>
+
+      <Node name="articulationCenters">
+        <Node name="articulationCenter1">
+          <ArticulationCenter parentIndex="0" childIndex="1" posOnParent="0 0 0" posOnChild="0 0 0"/>
+          <Node name="articulations">
+            <Articulation translation="0" rotation="1" rotationAxis="1 0 0" articulationIndex="0"/>
+            <Articulation translation="0" rotation="1" rotationAxis="0 0 1" articulationIndex="1"/>
+            <Articulation translation="0" rotation="1" rotationAxis="0 1 0" articulationIndex="2"/>
+            <Articulation translation="1" rotation="0" rotationAxis="0 1 0" articulationIndex="3"/>
+          </Node>
+        </Node>
+
+        <Node name="articulationCenter1_1">
+          <ArticulationCenter parentIndex="1" childIndex="2" posOnParent="0 0 0" posOnChild="0 0.0 0"/>
+          <Node name="articulations">
+            <Articulation translation="0" rotation="1" rotationAxis="1 0 0" articulationIndex="4"/>
+          </Node>
+        </Node>
+
+        <Node name="articulationCenter1_2">
+          <ArticulationCenter parentIndex="1" childIndex="3" posOnParent="0 0 0" posOnChild="0 0.0 0"/>
+          <Node name="articulations">
+            <Articulation translation="0" rotation="1" rotationAxis="-1 0 0" articulationIndex="5"/>
+          </Node>
+        </Node>
+
+      </Node>
+
+    </Node>
+
+  </Node>
+
+
+</Node>

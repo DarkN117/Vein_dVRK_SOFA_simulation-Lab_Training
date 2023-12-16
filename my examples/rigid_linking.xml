@@ -1,0 +1,53 @@
+<Node name="root" gravity="0 0 0" dt="0.01"  >
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Algorithm"/> <!-- Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,BruteForceDetection,CollisionPipeline] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Intersection"/> <!-- Needed to use components [MinProximityIntersection] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Geometry"/> <!-- Needed to use components [LineCollisionModel,PointCollisionModel,TriangleCollisionModel] -->  
+    <RequiredPlugin name="Sofa.Component.Collision.Response.Contact"/> <!-- Needed to use components [DefaultContactManager] -->  
+    <RequiredPlugin name="Sofa.Component.Constraint.Projective"/> <!-- Needed to use components [LinearMovementConstraint] -->  
+    <RequiredPlugin name="Sofa.Component.IO.Mesh"/> <!-- Needed to use components [MeshOBJLoader] -->  
+    <RequiredPlugin name="Sofa.Component.LinearSolver.Iterative"/> <!-- Needed to use components [CGLinearSolver] -->  
+    <RequiredPlugin name="Sofa.Component.Mapping.NonLinear"/> <!-- Needed to use components [RigidMapping] -->  
+    <RequiredPlugin name="Sofa.Component.Mass"/> <!-- Needed to use components [UniformMass] -->  
+    <RequiredPlugin name="Sofa.Component.MechanicalLoad"/> <!-- Needed to use components [ConstantForceField] -->  
+    <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/> <!-- Needed to use components [EulerImplicitSolver] -->  
+    <RequiredPlugin name="Sofa.Component.StateContainer"/> <!-- Needed to use components [MechanicalObject] -->  
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Constant"/> <!-- Needed to use components [MeshTopology] -->  
+    <RequiredPlugin name="Sofa.Component.Visual"/> <!-- Needed to use components [VisualStyle] -->
+     
+    <CollisionPipeline verbose="0" draw="0" />
+    <BruteForceDetection name="N2" />
+    <MinProximityIntersection name="Proximity" alarmDistance="0.8" contactDistance="0.5" />
+    <CollisionResponse name="Response" response="PenalityContactForceField" />
+
+    <VisualStyle name="visualStyle1" displayFlags="showBehaviorModels  showCollisionModels" />
+
+    <EulerImplicitSolver rayleighStiffness="0.01"/>
+    <CGLinearSolver iterations="50" tolerance="1e-06" threshold="1e-06"/>
+
+    <Node name="Sphere">
+        <EulerImplicitSolver rayleighStiffness="0"/>
+        <CGLinearSolver iterations="200" tolerance="1e-06" threshold="1e-06"/>
+        <MechanicalObject template="Rigid3d" name="myParticle" position="-2 10 0    0 0 0 1" showObject="1" showObjectScale="0.5" />
+        <UniformMass totalMass="1" />
+        <ConstantForceField force="0 -1 0 0 0 0" />
+        <!-- <Sphere name="Floor" listRadius="1" simulated="1" moving="1" contactStiffness="100" /> -->
+
+        <Node name="object1_surf" activated="1" >
+            <MeshObjLoader name="loader" filename="mesh/cube.obj" scale="10"/>
+            <Mesh src="@loader" drawTriangles="0"/>
+            <MechanicalObject name="MO_object1_surf" src="@loader" showObject="1"/>
+            <TriangleCollisionModel/>
+            <LineCollisionModel/>
+            <PointCollisionModel/>
+            <RigidMapping input="@.." output="@MO_object1_surf"/>  
+
+        </Node>
+
+        <LinearMovementConstraint template="Rigid3d" keyTimes="0 1 5 10 12" movements="0 0 0   0 0 0
+                                          0 0 0   0 0 0
+                                          0 0 -20  0 0 0
+                                          0 0 -20  0 0 60.3
+                                          0 0 0   0 0 60.3" />
+    </Node>
+
+</Node>
