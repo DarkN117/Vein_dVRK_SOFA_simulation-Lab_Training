@@ -31,3 +31,8 @@ Now, let's dive in the folders of the repo:)
 3)"Simulation_scene_development": it contains all the simulation scenes, written in python.
 
 4)"ROS_simulation_ws": it is the ROS workspace used for final simulation test. One file, "gripper_info_publisher" is needed to command in real time the simulated dVRK gripper.
+
+Appendix:
+-"DAL" stands for "DefaultAnimationLoop"
+-"FMAL" stands for "FreeMotionAnimationLoop"
+-"RSSFF" stands for "RestShapeSpringsForceField"
