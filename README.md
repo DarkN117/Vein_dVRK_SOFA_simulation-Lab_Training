@@ -32,7 +32,14 @@ Now, let's dive in the folders of the repo:)
 
 4)"ROS_simulation_ws": it is the ROS workspace used for final simulation test. One file, "gripper_info_publisher" is needed to command in real time the simulated dVRK gripper.
 
-Appendix:
+
+
+APPENDIX (some info to interpret file names):
+
 -"DAL" stands for "DefaultAnimationLoop"
+
 -"FMAL" stands for "FreeMotionAnimationLoop"
+
 -"RSSFF" stands for "RestShapeSpringsForceField"
+
+-"PSM" stands for "Patient Side Manipulator"
