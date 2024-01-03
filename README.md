@@ -16,7 +16,7 @@ My setup was:
 
 -SOFA version 23.06
 
--Blender, Gmsh and FreeCad to create volumetric and surface meshes and to further define them
+-Blender, Gmsh and FreeCad to create volumetric and surface meshes and to further refine them
 
 -ROS Noetic
 
@@ -24,7 +24,7 @@ My setup was:
 Now, let's dive in the folders of the repo:)
 
 
-1)"Simulation_meshes": it contains all the meshes developed for Vein,setup and dVRK gripper. The ones used for final test are in the folder "final_centered_mesh"
+1)"Simulation_meshes": it contains all the meshes developed for Vein,setup and dVRK gripper. The ones used for final test are in the folder "final_centered_mesh".
 
 2)"my examples": it contains several examples I created from scratch and/or modified from pre-existing ones. Very useful to understand basic principles and functions of SOFA.
 
