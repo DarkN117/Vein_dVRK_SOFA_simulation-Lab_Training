@@ -1,6 +1,6 @@
 # Vein_dVRK_SOFA_simulation-Lab_Training
 
-This repository contains all the files related to my internship done in the BioRobotics Institute.
+This repository contains all the files related to my internship done at the BioRobotics Institute.
 The activity done was named: "Design of a virtual surgical task and evaluation using the Da Vinci Research Kit(dVRK)".
 
 The surgical task deals with the interaction of a surgical robot, namely the dVRK, with a pulmonary vein.
