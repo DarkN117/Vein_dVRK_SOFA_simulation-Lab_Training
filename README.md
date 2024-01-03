@@ -28,7 +28,7 @@ Now, let's dive in the folders of the repo:)
 
 2)"my examples": it contains several examples I created from scratch and/or modified from pre-existing ones. Very useful to understand basic principles and functions of SOFA.
 
-3)"Simulation_scene_development": it contains all the simulation scenes, written in python.
+3)"Simulation_scene_development": it contains all the simulation scenes, written in python. Of course the final versions are the "v6" ones.
 
 4)"ROS_simulation_ws": it is the ROS workspace used for final simulation test. One file, "gripper_info_publisher" is needed to command in real time the simulated dVRK gripper.
 
