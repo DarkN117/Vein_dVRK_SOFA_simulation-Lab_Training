@@ -20,6 +20,8 @@ My setup was:
 
 -ROS Noetic
 
+-Python 3.8
+
 
 Now, let's dive in the folders of the repo:)
 
