@@ -1,3 +1,5 @@
+![Screenshot 2023-11-02 174229](https://github.com/DarkN117/Vein_dVRK_SOFA_simulation-Lab_Training/assets/148345993/cf2bfd6d-e545-4f20-a024-cd83c907821c)
+
 # Vein_dVRK_SOFA_simulation-Lab_Training
 
 This repository contains all the files related to my internship done at the BioRobotics Institute.
